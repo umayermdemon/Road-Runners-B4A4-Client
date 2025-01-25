@@ -1,4 +1,5 @@
-import { Box, Container, Typography, Grid, Link } from "@mui/material";
+import { Box, Container, Typography, Link } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 
 function Footer() {
   return (
@@ -12,7 +13,7 @@ function Footer() {
       <Container maxWidth="lg">
         <Grid container spacing={3}>
           {/* Column 1 */}
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Typography variant="h6" fontWeight="bold">
               About Us
             </Typography>
@@ -22,7 +23,7 @@ function Footer() {
           </Grid>
 
           {/* Column 2 */}
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Typography variant="h6" fontWeight="bold">
               Quick Links
             </Typography>
@@ -40,7 +41,7 @@ function Footer() {
           </Grid>
 
           {/* Column 3 */}
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Typography variant="h6" fontWeight="bold">
               Contact
             </Typography>

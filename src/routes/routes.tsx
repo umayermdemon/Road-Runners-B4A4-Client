@@ -3,6 +3,8 @@ import App from "../App";
 import Home from "@/pages/Home/Home";
 import About from "@/pages/About/About";
 import AllProducts from "@/pages/AllProducts/AllProducts/AllProducts";
+import Register from "@/pages/Auth/Register";
+import Login from "@/pages/Auth/Login";
 
 const routes = createBrowserRouter([
   {
@@ -10,7 +12,7 @@ const routes = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "/home",
+        path: "/",
         element: <Home />,
       },
       {
@@ -23,6 +25,16 @@ const routes = createBrowserRouter([
       },
     ],
   },
+  /*-----------------auth start------------*/
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  /*-----------------auth end------------*/
 ]);
 
 export default routes;

@@ -12,10 +12,11 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import logo from "../../assets/Logo/logo2.png";
 import { NavLink } from "react-router-dom";
+import LoginDialog from "@/pages/Auth/LoginDialog";
 
 // const pages = ["Home", "Pricing", "Blog"];
 const pages = [
-  { label: "Home", path: "/home" },
+  { label: "Home", path: "/" },
   { label: "All Products", path: "/allProducts" },
   { label: "About", path: "/about" },
 ];
@@ -23,6 +24,7 @@ const pages = [
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function Navbar() {
+  const user = false;
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -47,12 +49,13 @@ function Navbar() {
 
   return (
     <AppBar
-      position="static"
+      position="sticky"
       style={{ backgroundColor: "#262626", padding: "10px 0 10px 0" }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+          {/* large device image */}
           <img src={logo} alt="" className="w-24 hidden lg:block" />
-
+          {/* small device menu */}
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
@@ -94,11 +97,11 @@ function Navbar() {
               ))}
             </Menu>
           </Box>
-
+          {/* small & medium device image */}
           <div className="w-full  flex justify-center items-center lg:hidden">
             <img src={logo} alt="" className="w-24" />
           </div>
-
+          {/* medium & large device nav item */}
           <Box
             sx={{
               flexGrow: 1,
@@ -122,36 +125,49 @@ function Navbar() {
               // </Button>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}>
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {setting}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          {user ? (
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}>
+                {settings.map((setting) => (
+                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                    <Typography sx={{ textAlign: "center" }}>
+                      {setting}
+                    </Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          ) : (
+            <div className="flex flex-row gap-2">
+              {/* <NavLink to="/login">
+                <h1 className="font-bold">Login</h1>
+              </NavLink>
+              <span>/</span>
+              <NavLink to="/register">
+                <h1 className="font-bold">Register</h1>
+              </NavLink> */}
+              <LoginDialog />
+            </div>
+          )}
         </Toolbar>
       </Container>
     </AppBar>
