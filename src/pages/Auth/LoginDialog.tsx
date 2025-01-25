@@ -59,6 +59,7 @@ export default function LoginDialog() {
               autoFocus
               required
               margin="dense"
+              key={id}
               id={id}
               name={name}
               label={label}

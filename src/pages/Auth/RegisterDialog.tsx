@@ -50,12 +50,12 @@ export default function RegisterDialog() {
         }}>
         <div className="p-4 mb-0 flex flex-row justify-between">
           <h2 className="text-lg font-semibold">Register</h2>
-          <h1
+          <div
             onClick={handleClose}
             className="text-[#FF6600] hover:underline cursor-pointer"
             title="Already have an account? Login">
             <LoginDialog />
-          </h1>
+          </div>
         </div>
         <DialogContent>
           {RegisterFormFields.map(({ id, name, label, type }) => (
@@ -63,6 +63,7 @@ export default function RegisterDialog() {
               autoFocus
               required
               margin="dense"
+              key={id}
               id={id}
               name={name}
               label={label}
