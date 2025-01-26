@@ -1,15 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import { PersonOutlineOutlined } from "@mui/icons-material";
-import RegisterDialog from "./RegisterDialog";
 import { LoginFormFields } from "@/constance/formFields";
+import { NavLink } from "react-router-dom";
 
 export default function LoginDialog() {
   const [open, setOpen] = React.useState(false);
+
+  // React Hook Form
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -19,6 +28,13 @@ export default function LoginDialog() {
     setOpen(false);
   };
 
+  // Handle Form Submission
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    console.log("Form Data:", data);
+    reset();
+    handleClose();
+  };
+
   return (
     <React.Fragment>
       <h1
@@ -26,6 +42,7 @@ export default function LoginDialog() {
         onClick={handleClickOpen}>
         <PersonOutlineOutlined />
       </h1>
+
       <Dialog
         open={open}
         onClose={handleClose}
@@ -34,63 +51,54 @@ export default function LoginDialog() {
             component: "form",
             sx: {
               position: "absolute",
-              top: 50, // Move 50px from top
+              top: 50,
               right: 30,
-              transform: "translateX(-50%)", // Keep it centered horizontally
+              transform: "translateX(-50%)",
               width: "18%",
             },
-            onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries((formData as any).entries());
-              const email = formJson.email;
-              console.log(email);
-              handleClose();
-            },
+            onSubmit: handleSubmit(onSubmit), // Hook Form Submission
           },
         }}>
         <div className="p-4 mb-0 flex flex-row justify-between">
           <h2 className="text-lg font-semibold">Login</h2>
-          <RegisterDialog />
+          <NavLink
+            to="/register"
+            onClick={handleClose}
+            className="cursor-pointer hover:text-[#FF6600] transition hover:underline">
+            Create an account
+          </NavLink>
         </div>
+
         <DialogContent>
           {LoginFormFields.map(({ id, name, label, type }) => (
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              key={id}
-              id={id}
-              name={name}
-              label={label}
-              type={type}
-              fullWidth
-              size="medium"
-              variant="outlined"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: "#262626", // Default border color
+            <div key={id} className="mb-4">
+              <TextField
+                {...register(name, { required: `${label} is required` })}
+                margin="dense"
+                id={id}
+                name={name}
+                label={label}
+                type={type}
+                fullWidth
+                size="medium"
+                variant="outlined"
+                error={!!errors[name]} // Error handling
+                helperText={errors[name]?.message as string} // Show error message
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": { borderColor: "#262626" },
+                    "&:hover fieldset": { borderColor: "#FF6600" },
+                    "&.Mui-focused fieldset": { borderColor: "#FF6600" },
                   },
-                  "&:hover fieldset": {
-                    borderColor: "#FF6600", // Hover border color
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#FF6600", // Focused border color
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  color: "#262626", // Label color
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: "#FF6600", // Label color on focus
-                },
-              }}
-            />
+                  "& .MuiInputLabel-root": { color: "#262626" },
+                  "& .MuiInputLabel-root.Mui-focused": { color: "#FF6600" },
+                }}
+              />
+            </div>
           ))}
         </DialogContent>
+
         <DialogActions>
-          {/* <Button onClick={handleClose}>Cancel</Button> */}
           <button
             type="submit"
             className="w-full m-4 py-2 bg-[#FF6600] rounded-sm text-white font-semibold cursor-pointer hover:bg-[#262626] transition duration-300 ease-in-out">
