@@ -13,7 +13,7 @@ const AllProducts = () => {
   if (!products || products.length === 0) return <p>No products found</p>;
   console.log(products);
   return (
-    <div className="max-w-7xl mx-auto grid grid-cols-4 gap-4 py-4">
+    <div className="max-w-7xl mx-2 lg:mx-auto justify-center items-center grid md:grid-cols-2 lg:grid-cols-4 gap-4 py-4">
       {products?.data?.map((item: any) => (
         <ProductsCard key={item._id} product={item} />
       ))}

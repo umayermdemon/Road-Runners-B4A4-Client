@@ -7,11 +7,14 @@ import DialogContent from "@mui/material/DialogContent";
 import { PersonOutlineOutlined } from "@mui/icons-material";
 import { LoginFormFields } from "@/constance/formFields";
 import { NavLink } from "react-router-dom";
-import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { useLoginUserMutation } from "@/redux/features/user/userManagementApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { setUser } from "@/redux/features/auth/authSlice";
+import { jwtDecode } from "jwt-decode";
 
 export default function LoginDialog() {
   const [open, setOpen] = React.useState(false);
-  const [login] = useLoginMutation();
+  const [loginUser] = useLoginUserMutation();
 
   // React Hook Form
   const {
@@ -28,6 +31,7 @@ export default function LoginDialog() {
   const handleClose = () => {
     setOpen(false);
   };
+  const dispatch = useAppDispatch();
 
   // Handle Form Submission
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -35,11 +39,19 @@ export default function LoginDialog() {
       email: data.email,
       password: data.password,
     };
-    const res = await login(userInfo);
-    console.log(userInfo);
-    console.log(res);
+    try {
+      const res = await loginUser(userInfo).unwrap();
+      console.log(res);
+      const user = jwtDecode(res?.data?.accessToken);
+      console.log(user, "login");
+      dispatch(setUser({ user: user, token: res?.data?.accessToken }));
+
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
     // reset();
-    handleClose();
+    // handleClose();
   };
 
   return (

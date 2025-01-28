@@ -1,44 +1,37 @@
-import { RegisterFormFields } from "@/constance/formFields";
-import { useRegisterUserMutation } from "@/redux/features/user/userManagementApi";
-import { Tooltip } from "@mui/material";
-import {
-  FieldValues,
-  SubmitHandler,
-  useForm,
-  Controller,
-} from "react-hook-form";
+import { LoginFormFields } from "@/constance/formFields";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
 
-const Register = () => {
-  const [registerUser] = useRegisterUserMutation();
+import { Tooltip } from "@mui/material";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+
+const Login = () => {
+  const [loginUser] = useLoginMutation();
   const {
     register,
     handleSubmit,
-    reset,
-    control,
+    // reset,
     formState: { errors },
   } = useForm();
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
-      const formData = new FormData();
-      formData.append("data", JSON.stringify(data));
-      formData.append("file", data.userImage);
-      const res = await registerUser(formData).unwrap();
-      if (res.error) {
-        alert(res?.error?.message);
-      }
+      const userInfo = {
+        email: data.email,
+        password: data.password,
+      };
+      const res = await loginUser(userInfo).unwrap();
       console.log(res);
-      reset();
+      //   reset();
     } catch (err) {
       console.log(err);
     }
   };
   return (
-    <div className="max-w-lg mx-auto flex flex-col justify-center items-center py-4 min-h-[calc(100vh-295px)]">
+    <div className="max-w-lg mx-auto flex flex-col justify-center items-center  min-h-[calc(100vh-295px)]">
       <div className="p-4 mb-0 flex flex-row justify-center">
         <h2 className="text-3xl font-semibold">Register</h2>
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="">
-        {RegisterFormFields.map(({ name, label, type }) => {
+        {LoginFormFields.map(({ name, label, type }) => {
           const error = errors[name];
 
           return (
@@ -86,55 +79,11 @@ const Register = () => {
           );
         })}
 
-        {/* Custom File Uploader for Profile Image */}
-        <div className="relative mb-4">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Profile Image
-          </label>
-          <Controller
-            name="userImage"
-            control={control}
-            defaultValue=""
-            render={({ field: { onChange, value, ...field } }) => (
-              <div
-                className={`mt-1 w-full px-4 py-2 border rounded-lg shadow-sm 
-                focus:ring-2 focus:ring-[#FF6600] focus:border-[#FF6600] focus:outline-none 
-                ${
-                  errors.userImage
-                    ? "border-red-500"
-                    : "border-gray-300 dark:border-gray-600"
-                }`}>
-                <input
-                  type="file"
-                  id="userImage"
-                  {...field}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    onChange(e.target.files?.[0])
-                  }
-                  className="hidden" // Hide the default file input
-                />
-                <label
-                  htmlFor="userImage"
-                  className={
-                    value
-                      ? "cursor-pointer text-gray-700 dark:text-gray-300"
-                      : "cursor-pointer text-xs text-white bg-gray-400 py-1 px-2 rounded-md dark:text-gray-300"
-                  }>
-                  {value ? value.name : "Choose Image"}
-                </label>
-              </div>
-            )}
-          />
-          {errors.profileImg && (
-            <p className="text-red-500 text-sm mt-1">This field is required</p>
-          )}
-        </div>
-
         <div className="flex flex-row justify-center items-center mt-2">
           <button
             type="submit"
             className="w-1/2 py-2 bg-[#FF6600] rounded-sm  text-white font-semibold cursor-pointer hover:bg-[#262626] transition duration-300 ease-in-out">
-            Register
+            Login
           </button>
         </div>
       </form>
@@ -142,4 +91,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

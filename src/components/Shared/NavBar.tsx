@@ -11,20 +11,30 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import logo from "../../assets/Logo/logo2.png";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import LoginDialog from "@/pages/Auth/LoginDialog";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { logOut, selectAuthUser } from "@/redux/features/auth/authSlice";
+import { Button } from "@mui/material";
+import { useGetSingleUserQuery } from "@/redux/features/user/userManagementApi";
 
-// const pages = ["Home", "Pricing", "Blog"];
 const pages = [
   { label: "Home", path: "/" },
   { label: "All Products", path: "/allProducts" },
   { label: "About", path: "/about" },
 ];
-// console.log(items.map((page) => console.log(page)));
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Profile", "Account", "Dashboard"];
 
 function Navbar() {
-  const user = false;
+  const user = useAppSelector(selectAuthUser);
+  const navigate = useNavigate();
+  const email = user?.data?.email;
+  const { data: userdata } = useGetSingleUserQuery(email);
+  const dispatch = useAppDispatch();
+  const handleLogout = () => {
+    dispatch(logOut());
+    navigate("/");
+  };
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -56,7 +66,11 @@ function Navbar() {
           {/* large device image */}
           <img src={logo} alt="" className="w-24 hidden lg:block" />
           {/* small device menu */}
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "flex", md: "none" },
+            }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -81,18 +95,12 @@ function Navbar() {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}>
-              {/* {pages.map((page) => (
-                <MenuItem key={page?.label} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {page?.label}
-                  </Typography>
-                </MenuItem>
-              ))} */}
               {pages.map((page) => (
-                <NavLink key={page.path} to={page.path}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {page?.label}
-                  </Typography>
+                <NavLink
+                  key={page.path}
+                  to={page.path}
+                  onClick={handleCloseNavMenu}>
+                  <MenuItem>{page?.label}</MenuItem>
                 </NavLink>
               ))}
             </Menu>
@@ -116,20 +124,17 @@ function Navbar() {
                 }>
                 <h1 className="mr-8 font-bold">{page?.label}</h1>
               </NavLink>
-              // <Button
-              //   key={page}
-              //   onClick={handleCloseNavMenu}
-              //   sx={{ my: 2, color: "white", display: "block" }}
-              //   style={{ color: "#FF6600" }}>
-              //   {page}
-              // </Button>
             ))}
           </Box>
           {user ? (
-            <Box sx={{ flexGrow: 0 }}>
+            <Box sx={{ flexGrow: 0, display: "flex" }}>
+              <Button onClick={handleLogout}>Logout</Button>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar
+                    src={userdata?.data?.userImage}
+                    className="border-2 border-white"
+                  />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -158,13 +163,6 @@ function Navbar() {
             </Box>
           ) : (
             <div className="flex flex-row gap-2">
-              {/* <NavLink to="/login">
-                <h1 className="font-bold">Login</h1>
-              </NavLink>
-              <span>/</span>
-              <NavLink to="/register">
-                <h1 className="font-bold">Register</h1>
-              </NavLink> */}
               <LoginDialog />
             </div>
           )}

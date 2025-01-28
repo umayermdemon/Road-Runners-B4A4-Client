@@ -1,4 +1,4 @@
-import baseApi from "@/redux/api/baseApi";
+import { baseApi } from "@/redux/api/baseApi";
 
 const userManagementApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,7 +9,24 @@ const userManagementApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    loginUser: builder.mutation({
+      query: (data) => ({
+        url: "/auth/login",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    getSingleUser: builder.query({
+      query: (email: string) => ({
+        url: `/user/${email}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useRegisterUserMutation } = userManagementApi;
+export const {
+  useRegisterUserMutation,
+  useLoginUserMutation,
+  useGetSingleUserQuery,
+} = userManagementApi;

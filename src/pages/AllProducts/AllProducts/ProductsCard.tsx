@@ -9,7 +9,7 @@ import { TProduct } from "@/types/product.type";
 export default function ProductsCard({ product }: TProduct) {
   const { inStock, name, price, productImage, brand } = product;
   return (
-    <Card sx={{ width: 320 }}>
+    <Card sx={{ width: { xs: 380, sm: 370, md: 220, lg: 320 } }}>
       <div>
         <Typography level="title-lg">{name}</Typography>
         <div className="flex  items-center gap-1">
