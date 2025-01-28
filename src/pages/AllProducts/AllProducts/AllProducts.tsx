@@ -1,7 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useGetAllProductsQuery } from "@/redux/features/products/productsApi";
+import ProductsCard from "./ProductsCard";
+
 const AllProducts = () => {
+  const {
+    data: products,
+    isLoading,
+    error,
+  } = useGetAllProductsQuery(undefined);
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error loading products</p>;
+  if (!products || products.length === 0) return <p>No products found</p>;
+  console.log(products);
   return (
-    <div>
-      <h1>This is AllProducts component</h1>
+    <div className="max-w-7xl mx-auto grid grid-cols-4 gap-4 py-4">
+      {products?.data?.map((item: any) => (
+        <ProductsCard key={item._id} product={item} />
+      ))}
     </div>
   );
 };

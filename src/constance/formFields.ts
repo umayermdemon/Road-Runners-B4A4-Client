@@ -1,12 +1,10 @@
 export const LoginFormFields = [
   {
-    id: "email",
     name: "email",
     label: "Email Address",
     type: "email",
   },
   {
-    id: "password",
     name: "password",
     label: "Password",
     type: "password",

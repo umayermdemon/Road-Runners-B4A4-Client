@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import TextField from "@mui/material/TextField";
@@ -8,15 +7,17 @@ import DialogContent from "@mui/material/DialogContent";
 import { PersonOutlineOutlined } from "@mui/icons-material";
 import { LoginFormFields } from "@/constance/formFields";
 import { NavLink } from "react-router-dom";
+import { useLoginMutation } from "@/redux/features/auth/authApi";
 
 export default function LoginDialog() {
   const [open, setOpen] = React.useState(false);
+  const [login] = useLoginMutation();
 
   // React Hook Form
   const {
     register,
     handleSubmit,
-    reset,
+    // reset,
     formState: { errors },
   } = useForm();
 
@@ -29,9 +30,15 @@ export default function LoginDialog() {
   };
 
   // Handle Form Submission
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    console.log("Form Data:", data);
-    reset();
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const userInfo = {
+      email: data.email,
+      password: data.password,
+    };
+    const res = await login(userInfo);
+    console.log(userInfo);
+    console.log(res);
+    // reset();
     handleClose();
   };
 
@@ -70,12 +77,12 @@ export default function LoginDialog() {
         </div>
 
         <DialogContent>
-          {LoginFormFields.map(({ id, name, label, type }) => (
-            <div key={id} className="mb-4">
+          {LoginFormFields.map(({ name, label, type }) => (
+            <div key={name} className="mb-4">
               <TextField
                 {...register(name, { required: `${label} is required` })}
                 margin="dense"
-                id={id}
+                id={name}
                 name={name}
                 label={label}
                 type={type}

@@ -1,17 +1,36 @@
 import { RegisterFormFields } from "@/constance/formFields";
+import { useRegisterUserMutation } from "@/redux/features/user/userManagementApi";
 import { Tooltip } from "@mui/material";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import {
+  FieldValues,
+  SubmitHandler,
+  useForm,
+  Controller,
+} from "react-hook-form";
 
 const Register = () => {
+  const [registerUser] = useRegisterUserMutation();
   const {
     register,
     handleSubmit,
     reset,
+    control, // Add control for Controller
     formState: { errors },
   } = useForm();
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    console.log(data);
-    reset();
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(data));
+      formData.append("file", data.userImage);
+      const res = await registerUser(formData).unwrap();
+      if (res.error) {
+        alert(res?.error?.message);
+      }
+      console.log(res);
+      reset();
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <div className="max-w-lg mx-auto flex flex-col justify-center items-center  min-h-[calc(100vh-295px)]">
@@ -51,6 +70,7 @@ const Register = () => {
                 }}>
                 <input
                   type={type}
+                  id={name}
                   {...register(name, { required: true })}
                   className={`mt-1  w-full px-4 py-2 border rounded-lg shadow-sm 
                   focus:ring-2 focus:ring-[#FF6600] focus:border-[#FF6600] focus:outline-none 
@@ -65,6 +85,46 @@ const Register = () => {
             </div>
           );
         })}
+
+        {/* Custom File Uploader for Profile Image */}
+        <div className="relative mb-4">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Profile Image
+          </label>
+          <Controller
+            name="userImage"
+            control={control}
+            defaultValue=""
+            render={({ field: { onChange, value, ...field } }) => (
+              <div
+                className={`mt-1 w-full px-4 py-2 border rounded-lg shadow-sm 
+                focus:ring-2 focus:ring-[#FF6600] focus:border-[#FF6600] focus:outline-none 
+                ${
+                  errors.userImage
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                }`}>
+                <input
+                  type="file"
+                  id="userImage"
+                  {...field}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    onChange(e.target.files?.[0])
+                  }
+                  className="hidden" // Hide the default file input
+                />
+                <label
+                  htmlFor="userImage"
+                  className="cursor-pointer text-gray-700 dark:text-gray-300">
+                  {value ? value.name : "Choose File"}
+                </label>
+              </div>
+            )}
+          />
+          {errors.profileImg && (
+            <p className="text-red-500 text-sm mt-1">This field is required</p>
+          )}
+        </div>
 
         <div className="flex flex-row justify-center items-center mt-2">
           <button
