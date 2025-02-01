@@ -5,9 +5,8 @@ import Footer from "../Shared/Footer";
 const MainLayout = () => {
   return (
     <div>
-      {/* <h1 className="text-5xl text-[#FF6600]">MainLayout</h1> */}
       <NavBar />
-      <div className="min-h-[calc(100vh-295px)]">
+      <div className="min-h-[calc(100vh-295px)] banner">
         <Outlet />
       </div>
       <Footer />

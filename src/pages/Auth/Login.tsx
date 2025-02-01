@@ -1,15 +1,26 @@
 import { LoginFormFields } from "@/constance/formFields";
-import { useLoginMutation } from "@/redux/features/auth/authApi";
+import { setUser } from "@/redux/features/auth/authSlice";
+import { useLoginUserMutation } from "@/redux/features/user/userManagementApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-import { Tooltip } from "@mui/material";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
+import { jwtDecode } from "jwt-decode";
+import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Login = () => {
-  const [loginUser] = useLoginMutation();
+  const [loginUser] = useLoginUserMutation();
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const togglePasswordVisibility = () => setShowPassword((item) => !item);
   const {
     register,
     handleSubmit,
-    // reset,
+    reset,
     formState: { errors },
   } = useForm();
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
@@ -19,65 +30,66 @@ const Login = () => {
         password: data.password,
       };
       const res = await loginUser(userInfo).unwrap();
-      console.log(res);
-      //   reset();
-    } catch (err) {
-      console.log(err);
+      const user = jwtDecode(res?.data?.accessToken);
+      dispatch(setUser({ user: user, token: res?.data?.accessToken }));
+      console.log(res, user);
+      toast.success(res?.message);
+      navigate("/");
+      reset();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(err?.data?.message);
     }
   };
   return (
     <div className="max-w-lg mx-auto flex flex-col justify-center items-center  min-h-[calc(100vh-295px)]">
       <div className="p-4 mb-0 flex flex-row justify-center">
-        <h2 className="text-3xl font-semibold">Register</h2>
+        <h2 className="text-3xl font-semibold">Login</h2>
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="">
-        {LoginFormFields.map(({ name, label, type }) => {
-          const error = errors[name];
-
-          return (
-            <div key={name} className="relative mb-4">
-              <label className=" text-sm font-medium text-gray-700 dark:text-gray-300">
-                {label}
-              </label>
-
-              <Tooltip
-                title={error ? "This field is required" : ""}
-                placement="right"
-                arrow
-                componentsProps={{
-                  tooltip: {
-                    sx: {
-                      backgroundColor: "#EF4444", // Tooltip background color
-                      color: "white", // Tooltip text color
-                      fontSize: "10px", // Tooltip font size
-                      padding: "8px 12px", // Padding
-                      borderRadius: "6px", // Rounded corners
-                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)", // Soft shadow
-                    },
-                  },
-                  arrow: {
-                    sx: {
-                      color: "#EF4444", // Arrow color to match tooltip
-                    },
-                  },
-                }}>
-                <input
-                  type={type}
-                  id={name}
-                  {...register(name, { required: true })}
-                  className={`mt-1  w-full px-4 py-2 border rounded-lg shadow-sm 
-                  focus:ring-2 focus:ring-[#FF6600] focus:border-[#FF6600] focus:outline-none 
-                  ${
-                    error
-                      ? "border-red-500"
-                      : "border-gray-300 dark:border-gray-600"
-                  }
-                  `}
-                />
-              </Tooltip>
-            </div>
-          );
-        })}
+        {LoginFormFields.map(({ name, label, type }) => (
+          <div key={name} className="mb-4">
+            <TextField
+              {...register(name, { required: `${label} is required` })}
+              margin="dense"
+              id={name}
+              name={name}
+              label={label}
+              type={
+                name === "password"
+                  ? showPassword
+                    ? "text"
+                    : "password"
+                  : type
+              }
+              fullWidth
+              size="medium"
+              variant="outlined"
+              error={!!errors[name]}
+              helperText={errors[name]?.message as string}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": { borderColor: "#262626" },
+                  "&:hover fieldset": { borderColor: "#FF6600" },
+                  "&.Mui-focused fieldset": { borderColor: "#FF6600" },
+                },
+                "& .MuiInputLabel-root": { color: "#262626" },
+                "& .MuiInputLabel-root.Mui-focused": { color: "#FF6600" },
+              }}
+              slotProps={{
+                input: {
+                  endAdornment: name === "password" && (
+                    <InputAdornment position="end">
+                      <IconButton onClick={togglePasswordVisibility} edge="end">
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+          </div>
+        ))}
 
         <div className="flex flex-row justify-center items-center mt-2">
           <button
@@ -87,6 +99,12 @@ const Login = () => {
           </button>
         </div>
       </form>
+      <div className="flex flex-row gap-2 mt-2">
+        <h1>Don't have an account?</h1>
+        <NavLink to="/register" className="underline text-blue-600">
+          Register
+        </NavLink>
+      </div>
     </div>
   );
 };

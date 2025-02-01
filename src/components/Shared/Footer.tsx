@@ -15,10 +15,11 @@ function Footer() {
           {/* Column 1 */}
           <Grid size={{ xs: 12, sm: 4 }}>
             <Typography variant="h6" fontWeight="bold">
-              About Us
+              About Road Runners
             </Typography>
             <Typography variant="body2">
-              We provide top-notch services to help your business grow.
+              Your one-stop shop for premium bikes, expert advice, and top-tier
+              accessories.
             </Typography>
           </Grid>
 
@@ -27,16 +28,16 @@ function Footer() {
             <Typography variant="h6" fontWeight="bold">
               Quick Links
             </Typography>
-            <Link href="#" color="inherit" underline="hover">
+            <Link href="/" color="inherit" underline="hover">
               Home
             </Link>
             <br />
-            <Link href="#" color="inherit" underline="hover">
-              Services
+            <Link href="/allProducts" color="inherit" underline="hover">
+              All Products
             </Link>
             <br />
-            <Link href="#" color="inherit" underline="hover">
-              Contact
+            <Link href="/about" color="inherit" underline="hover">
+              About
             </Link>
           </Grid>
 
@@ -45,15 +46,21 @@ function Footer() {
             <Typography variant="h6" fontWeight="bold">
               Contact
             </Typography>
-            <Typography variant="body2">Email: contact@example.com</Typography>
+            <Typography variant="body2">
+              Email: support@roadrunners.com
+            </Typography>
             <Typography variant="body2">Phone: +123 456 7890</Typography>
+            <Typography variant="body2">
+              Location: 123 Bike Street, City
+            </Typography>
           </Grid>
         </Grid>
 
         {/* Copyright Section */}
         <Box mt={3} textAlign="center">
           <Typography variant="body2">
-            &copy; {new Date().getFullYear()} All rights reserved.
+            &copy; {new Date().getFullYear()} Road Runners. Built for Bikers,
+            Powered by Passion.
           </Typography>
         </Box>
       </Container>

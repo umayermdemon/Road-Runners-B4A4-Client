@@ -3,3 +3,9 @@
 @import "@fontsource/roboto/400.css";
 @import "@fontsource/roboto/500.css";
 @import "@fontsource/roboto/700.css";
+
+.banner {
+  background-color: #f9f9f9; /* Light background */
+  background-image: radial-gradient(#ccc 1px, transparent 1px);
+  background-size: 10px 10px; /* Adjust the size of the dots */
+}

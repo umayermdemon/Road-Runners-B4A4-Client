@@ -5,11 +5,17 @@ import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import BookmarkAdd from "@mui/icons-material/BookmarkAddOutlined";
 import { TProduct } from "@/types/product.type";
+import { NavLink } from "react-router-dom";
 
 export default function ProductsCard({ product }: TProduct) {
-  const { inStock, name, price, productImage, brand } = product;
+  const { inStock, name, price, productImage, brand, _id } = product;
   return (
-    <Card sx={{ width: { xs: 380, sm: 370, md: 220, lg: 320 } }}>
+    <Card
+      sx={{
+        width: { xs: 410, sm: 370, md: 220, lg: 300 },
+        borderColor: "#FF8533",
+        backgroundColor: "#e9eae9",
+      }}>
       <div>
         <Typography level="title-lg">{name}</Typography>
         <div className="flex  items-center gap-1">
@@ -48,9 +54,11 @@ export default function ProductsCard({ product }: TProduct) {
             </p>
           </div>
         </div>
-        <button className="bg-[#FF6600] px-1 py-2 text-gray-50 rounded-md cursor-pointer">
-          View Details
-        </button>
+        <NavLink to={`/productDetails/${_id}`}>
+          <button className="bg-[#FF6600] px-1 py-2 text-gray-50 rounded-md cursor-pointer">
+            View Details
+          </button>
+        </NavLink>
       </CardContent>
     </Card>
   );
