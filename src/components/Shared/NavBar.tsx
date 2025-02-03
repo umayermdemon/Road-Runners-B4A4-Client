@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -7,13 +8,11 @@ import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import logo from "../../assets/Logo/logo2.png";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { logOut, selectAuthUser } from "@/redux/features/auth/authSlice";
-import { Button } from "@mui/material";
 import { useGetSingleUserQuery } from "@/redux/features/user/userManagementApi";
 
 function Navbar() {
@@ -21,10 +20,20 @@ function Navbar() {
   const pages = [
     { label: "Home", path: "/" },
     { label: "All Products", path: "/allProducts" },
-    ...(user ? [{ label: "Dashboard", path: "/dashboard" }] : []),
     { label: "About", path: "/about" },
   ];
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
   const navigate = useNavigate();
+
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const email = user?.email;
   const { data: userdata } = useGetSingleUserQuery(email as string);
   const dispatch = useAppDispatch();
@@ -121,12 +130,32 @@ function Navbar() {
           </Box>
           {user ? (
             <Box sx={{ flexGrow: 0, display: "flex" }}>
-              <Button onClick={handleLogout}>Logout</Button>
-              <Tooltip title={user?.email} placement="bottom-end">
-                <IconButton>
-                  <Avatar src={userdata?.data?.userImage} className="" />
-                </IconButton>
-              </Tooltip>
+              <IconButton onClick={handleClick}>
+                <Avatar src={userdata?.data?.userImage} className="" />
+              </IconButton>
+              <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                <MenuItem
+                  onClick={() => {
+                    navigate("/profile");
+                    handleClose();
+                  }}>
+                  My Profile
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    navigate("/dashboard");
+                    handleClose();
+                  }}>
+                  Dashboard
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    handleLogout();
+                    handleClose();
+                  }}>
+                  Logout
+                </MenuItem>
+              </Menu>
             </Box>
           ) : (
             <div className="flex flex-row gap-2">

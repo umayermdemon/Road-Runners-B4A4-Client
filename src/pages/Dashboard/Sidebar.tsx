@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Drawer,
   List,
@@ -8,9 +9,10 @@ import {
 } from "@mui/material";
 import { AddBox, Inventory, People } from "@mui/icons-material";
 import { useAppSelector } from "@/redux/hooks";
-import { selectAuthUser } from "@/redux/features/auth/authSlice";
+import { selectAuthToken, TUser } from "@/redux/features/auth/authSlice";
 import SidebarItems from "./utils/SidebarItems";
 import PersonIcon from "@mui/icons-material/Person";
+import verifyToken from "@/utils/verifyToken";
 
 const sidebarWidth = 250;
 
@@ -23,8 +25,11 @@ const Sidebar = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const user = useAppSelector(selectAuthUser);
-
+  const token = useAppSelector(selectAuthToken);
+  let user: any;
+  if (token) {
+    user = verifyToken(token) as TUser;
+  }
   const menuItems = [
     {
       label: "All Product",

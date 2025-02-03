@@ -5,10 +5,21 @@ import IconButton from "@mui/joy/IconButton";
 import Typography from "@mui/joy/Typography";
 import BookmarkAdd from "@mui/icons-material/BookmarkAddOutlined";
 import { TProduct } from "@/types/product.type";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import AuthUser from "@/utils/authUser";
 
 export default function ProductsCard({ product }: TProduct) {
   const { inStock, name, price, productImage, brand, _id } = product;
+  const user = AuthUser();
+  const navigate = useNavigate();
+  const handleViewDetails = () => {
+    if (!user) {
+      navigate("/login", { state: { fromProduct: _id } });
+    } else {
+      navigate(`/productDetails/${_id}`);
+    }
+  };
+
   return (
     <Card
       sx={{
@@ -54,11 +65,12 @@ export default function ProductsCard({ product }: TProduct) {
             </p>
           </div>
         </div>
-        <NavLink to={`/productDetails/${_id}`}>
-          <button className="bg-[#FF6600] px-1 py-2 text-gray-50 rounded-md cursor-pointer">
-            View Details
-          </button>
-        </NavLink>
+
+        <button
+          onClick={handleViewDetails}
+          className="bg-[#FF6600] px-1 py-2 text-gray-50 rounded-md cursor-pointer">
+          View Details
+        </button>
       </CardContent>
     </Card>
   );

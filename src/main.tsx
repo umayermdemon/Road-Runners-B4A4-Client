@@ -12,7 +12,7 @@ createRoot(document.getElementById("root")!).render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <RoutesWrapper />
-        <Toaster />
+        <Toaster position="top-right" />
       </PersistGate>
     </Provider>
   </StrictMode>

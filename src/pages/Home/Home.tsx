@@ -1,5 +1,5 @@
 import Banner from "./Banner/Banner";
-import Featured from "./Banner/Featured/Featured";
+import Featured from "./Featured/Featured";
 
 const Home = () => {
   return (

@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import App from "../App";
 import Home from "@/pages/Home/Home";
 import About from "@/pages/About/About";
@@ -8,19 +12,37 @@ import ProductDetails from "@/pages/AllProducts/AllProducts/ProductDetails";
 import Login from "@/pages/Auth/Login";
 import ProtectedLoginRegister from "@/components/Layout/ProtectedLoginRegister";
 
-import { selectAuthUser } from "@/redux/features/auth/authSlice";
-import { useAppSelector } from "@/redux/hooks";
+import {
+  logOut,
+  selectAuthToken,
+  selectAuthUser,
+  TUser,
+} from "@/redux/features/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import ProtectedRoute from "@/components/Layout/ProtectedRoute";
 import CreateProduct from "@/pages/Admin/ProductManagement/CreateProduct";
 import AdminAllProducts from "@/pages/Admin/ProductManagement/AdminAllProducts";
 import AllUser from "@/pages/Admin/UserManagement/AllUser";
-import Dashboard from "@/pages/Dashboard/Dashboard";
 import CustomerProfile from "@/pages/Customer/CustomerProfile/CustomerProfile";
+import verifyToken from "@/utils/verifyToken";
+import Dashboard from "@/pages/Dashboard/Dashboard";
+import Checkout from "@/pages/Order/Checkout";
+import Profile from "@/pages/Profile/Profile";
 
 const RoutesWrapper = () => {
-  const user = useAppSelector(selectAuthUser);
+  const token = useAppSelector(selectAuthToken);
+  const currentUser = useAppSelector(selectAuthUser);
+  const dispatch = useAppDispatch();
+  let user;
+  if (token) {
+    user = verifyToken(token);
+  }
+  if ((user as TUser)?.role !== currentUser?.role) {
+    dispatch(logOut());
+    return <Navigate to="/login" replace />;
+  }
   const dashboardChildren =
-    user?.role === "Admin"
+    (user as TUser)?.role === "Admin"
       ? [
           { index: true, element: <AdminAllProducts /> },
           { path: "products", element: <AdminAllProducts /> },
@@ -54,8 +76,16 @@ const RoutesWrapper = () => {
           element: <About />,
         },
         {
-          path: "/about",
-          element: <About />,
+          path: "/profile",
+          element: <Profile />,
+        },
+        {
+          path: "/checkout",
+          element: (
+            <ProtectedRoute role="Customer">
+              <Checkout />
+            </ProtectedRoute>
+          ),
         },
         {
           element: <ProtectedLoginRegister />,
@@ -75,7 +105,7 @@ const RoutesWrapper = () => {
     {
       path: "/dashboard",
       element: (
-        <ProtectedRoute>
+        <ProtectedRoute role={(user as TUser)?.role}>
           <Dashboard />
         </ProtectedRoute>
       ),

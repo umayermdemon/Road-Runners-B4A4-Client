@@ -7,17 +7,23 @@ type TInput = {
   label: string;
   register: UseFormRegister<any>;
   type?: string;
+  registerOptions?: object;
 };
 
-const RRInput = ({ name, label, register, type }: TInput) => {
-  const isMultiline = name === "description";
+const RRInput = ({
+  name,
+  label,
+  register,
+  type,
+  registerOptions = {},
+}: TInput) => {
   return (
     <div>
       <TextField
-        {...register(name)}
+        {...register(name, registerOptions)}
         label={label}
         type={type}
-        multiline={isMultiline}
+        multiline={name === "description"}
         fullWidth
         sx={{ mb: 2 }}
       />

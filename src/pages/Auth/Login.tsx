@@ -8,14 +8,16 @@ import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const Login = () => {
   const [loginUser] = useLoginUserMutation();
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  console.log(location);
   const togglePasswordVisibility = () => setShowPassword((item) => !item);
   const {
     register,
@@ -34,8 +36,12 @@ const Login = () => {
       dispatch(setUser({ user: user, token: res?.data?.accessToken }));
       console.log(res, user);
       toast.success(res?.message);
-      navigate("/");
       reset();
+      const redirectPath = location?.state?.fromProduct
+        ? `/productDetails/${location?.state?.fromProduct}`
+        : "/"; // Default redirect path (home or dashboard)
+
+      navigate(redirectPath, { replace: true });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err?.data?.message);

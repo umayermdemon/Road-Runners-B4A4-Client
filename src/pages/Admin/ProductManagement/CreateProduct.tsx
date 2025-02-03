@@ -1,80 +1,160 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useForm } from "react-hook-form";
+import {
+  Controller,
+  FieldValues,
+  SubmitHandler,
+  useForm,
+} from "react-hook-form";
 import { Button, Typography, Box } from "@mui/material";
 import RRInput from "@/Form/RRInput";
 import RRSelect from "@/Form/RRSelect";
+import { useCreateProductMutation } from "@/redux/features/products/productsApi";
 
-// Sample brands and categories data
-const brands = ["Volt Bikes", "Yamaha", "Honda", "BMW"];
-const categories = ["Electric", "Mountain", "Road", "Hybrid"];
+const brands = [
+  "Mountain Bikes Inc.",
+  "SpeedX",
+  "CityRide",
+  "OffRoadX",
+  "EcoRide",
+  "HybridMaster",
+  "Marathon Bikes",
+  "GreenWheels",
+  "TrekMaster",
+  "Volt Bikes",
+  "Gravity Bikes",
+];
+const categories = ["Mountain", "Road", "Hybrid", "Electric"];
 
-const ProductForm = () => {
-  // Initialize react-hook-form with default values
-  const { register, handleSubmit } = useForm({});
+const CreateProduct = () => {
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
+  const [addProduct] = useCreateProductMutation();
 
-  // Submit handler for the form
-  const onSubmit = (data: any) => {
-    console.log("Submitted Product:", data);
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    try {
+      const convertedData = {
+        ...data,
+        price: Number(data.price),
+        quantity: Number(data.quantity),
+      };
+      const productData = {
+        product: convertedData,
+      };
+
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(productData));
+      formData.append("file", data?.productImage);
+      console.log(Object.fromEntries(formData.entries()));
+      const res = await addProduct(formData).unwrap();
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
     <Box
       sx={{
-        maxWidth: 400,
+        maxWidth: 600,
         mx: "auto",
         p: 3,
         boxShadow: 2,
         borderRadius: 2,
         bgcolor: "white",
       }}>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Crate Bike Data
+      <Typography
+        variant="h4"
+        sx={{ mb: 2, textAlign: "center", fontWeight: "500" }}>
+        Create Bike Data
       </Typography>
-      {/* Create bike form */}
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Bike Name Field */}
+        <div>
+          <RRInput name="name" register={register} label="Bike Name" />
 
-        <RRInput name="name" register={register} label="Bike Name" />
+          <RRSelect
+            name="brand"
+            control={control}
+            label="Brand"
+            options={brands}
+          />
 
-        {/* Brand Select Field */}
+          <RRSelect
+            name="category"
+            control={control}
+            label="Category"
+            options={categories}
+          />
 
-        <RRSelect
-          name="brand"
-          register={register}
-          label="Brand"
-          options={brands}
-        />
+          <RRInput name="description" register={register} label="Description" />
+          <div className="flex flex-row gap-2">
+            <div className="flex-auto">
+              <RRInput
+                name="price"
+                register={register}
+                registerOptions={{ valueAsNumber: true }}
+                label="Price ($)"
+                type="number"
+              />
+            </div>
+            <div className="flex-auto">
+              <RRInput
+                name="quantity"
+                register={register}
+                registerOptions={{ valueAsNumber: true }}
+                label="Quantity"
+                type="number"
+              />
+            </div>
+          </div>
+        </div>
 
-        {/* Price Field */}
-        <RRInput
-          name="price"
-          register={register}
-          label="Price ($)"
-          type="number"
-        />
-
-        {/* Category Select Field */}
-
-        <RRSelect
-          name="category"
-          register={register}
-          label="Category"
-          options={categories}
-        />
-        {/* Description Field */}
-
-        <RRInput name="description" register={register} label="Description" />
-
-        {/* Quantity Field */}
-        <RRInput
-          name="quantity"
-          register={register}
-          label="Quantity"
-          type="number"
-        />
+        <div className="relative mb-4">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Product Image
+          </label>
+          <Controller
+            name="productImage"
+            control={control}
+            defaultValue=""
+            render={({ field: { onChange, value, ...field } }) => (
+              <div
+                className={`mt-1 w-full px-4 py-2 border rounded-lg shadow-sm 
+                focus:ring-2 focus:ring-[#FF6600] focus:border-[#FF6600] focus:outline-none 
+                ${
+                  errors.productImage
+                    ? "border-red-500"
+                    : "border-gray-300 dark:border-gray-600"
+                }`}>
+                <input
+                  type="file"
+                  id="productImage"
+                  {...field}
+                  onChange={(e) => onChange(e.target.files?.[0])}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="productImage"
+                  className={`cursor-pointer ${
+                    value
+                      ? "text-gray-700"
+                      : "text-xs text-white bg-gray-400 py-1 px-2 rounded-md"
+                  }`}>
+                  {value ? value.name : "Choose Image"}
+                </label>
+              </div>
+            )}
+          />
+          {errors.productImage && (
+            <p className="text-red-500 text-sm mt-1">This field is required</p>
+          )}
+        </div>
 
         {/* Submit Button */}
-        <Button type="submit" variant="contained" color="primary" fullWidth>
+        <Button type="submit" variant="contained" color="warning" fullWidth>
           Submit
         </Button>
       </form>
@@ -82,4 +162,4 @@ const ProductForm = () => {
   );
 };
 
-export default ProductForm;
+export default CreateProduct;

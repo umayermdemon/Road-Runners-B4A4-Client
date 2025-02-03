@@ -6,19 +6,57 @@ import CardOverflow from "@mui/joy/CardOverflow";
 import Chip from "@mui/joy/Chip";
 import Link from "@mui/joy/Link";
 import Typography from "@mui/joy/Typography";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetSingleProductQuery } from "@/redux/features/products/productsApi";
+import AuthUser from "@/utils/authUser";
+import RegisteredUser from "@/utils/registeredUser";
+import { useState } from "react";
 
 export default function ProductDetails() {
+  const navigate = useNavigate();
+  const user = AuthUser();
+
   const { id } = useParams();
-  console.log(id);
   const { data: product } = useGetSingleProductQuery(id as string);
-  console.log(product);
+  const registeredUser = RegisteredUser();
+  const { name, email } = registeredUser?.data || [];
+
+  // Quantity State
+  const [quantity, setQuantity] = useState(1);
+
+  // Handle Quantity Increase
+  const increaseQuantity = () => {
+    if (product?.quantity && quantity < product?.quantity) {
+      setQuantity(quantity + 1);
+    }
+  };
+
+  // Handle Quantity Decrease
+  const decreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+  const handleCheckout = () => {
+    const userDetails = {
+      name: name || "",
+      email: email || "",
+    };
+    const productDetails = {
+      id: id,
+      quantity: quantity,
+    };
+    navigate("/checkout", {
+      state: { user: userDetails, product: productDetails },
+    });
+  };
+
   return (
-    <div className=" flex justify-center items-center py-2 mx-2">
+    <div className="flex justify-center items-center  mx-2">
       <Card
         sx={{
-          width: 700,
+          width: 668,
           maxWidth: "100%",
           boxShadow: "lg",
         }}>
@@ -26,16 +64,14 @@ export default function ProductDetails() {
           <AspectRatio sx={{ minWidth: 200 }}>
             <img
               src={product?.productImage}
-              srcSet={product?.productImage}
-              loading={product?.name}
               alt={product?.name}
+              loading="lazy"
             />
           </AspectRatio>
         </CardOverflow>
         <CardContent>
           <Typography level="body-xs">Brand: {product?.brand}</Typography>
           <Link
-            href="#product-card"
             color="neutral"
             textColor="text.primary"
             sx={{ fontWeight: "lg" }}>
@@ -60,14 +96,40 @@ export default function ProductDetails() {
             <Typography level="body-sm">
               (Only <b>{product?.quantity}</b> left in stock!)
             </Typography>
-          ) : (
-            <Typography level="body-sm"></Typography>
-          )}
+          ) : null}
           <Typography level="body-sm">{product?.description}</Typography>
+
+          {/* Quantity Selector */}
+          {user?.role === "Customer" && (
+            <div className="flex items-center gap-3 mt-2">
+              <Button
+                size="sm"
+                color="neutral"
+                variant="soft"
+                onClick={decreaseQuantity}
+                disabled={quantity <= 1}>
+                -
+              </Button>
+              <Typography>{quantity}</Typography>
+              <Button
+                size="sm"
+                color="neutral"
+                variant="soft"
+                onClick={increaseQuantity}
+                disabled={quantity >= product?.quantity}>
+                +
+              </Button>
+            </div>
+          )}
         </CardContent>
         <CardOverflow>
-          <Button variant="solid" color="danger" size="lg">
-            Add to cart
+          <Button
+            variant="solid"
+            color="warning"
+            size="lg"
+            disabled={!product?.inStock || user?.role !== "Customer"}
+            onClick={handleCheckout}>
+            Buy now
           </Button>
         </CardOverflow>
       </Card>

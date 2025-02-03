@@ -46,7 +46,7 @@ const AllProducts = () => {
 
   if (isLoading)
     return (
-      <div className="border-2 min-h-[calc(100vh-295px)] flex justify-center items-center">
+      <div className=" min-h-[calc(100vh-295px)] flex justify-center items-center">
         <CircularProgress color="warning" />
       </div>
     );

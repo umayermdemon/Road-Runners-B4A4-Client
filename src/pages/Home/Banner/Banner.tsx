@@ -1,9 +1,10 @@
 import { useGetAllProductsQuery } from "@/redux/features/products/productsApi";
+import { CircularProgress } from "@mui/material";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
 const Banner = () => {
-  const { data: product } = useGetAllProductsQuery(undefined);
+  const { data: product, isLoading } = useGetAllProductsQuery(undefined);
 
   const limitedProducts = Array.isArray(product)
     ? product.filter((p) => p.inStock).slice(0, 4)
@@ -20,11 +21,17 @@ const Banner = () => {
         (prevIndex - 1 + limitedProducts.length) % limitedProducts.length
     );
   };
+  if (isLoading)
+    return (
+      <div className=" min-h-[calc(100vh-295px)] flex justify-center items-center">
+        <CircularProgress color="warning" />
+      </div>
+    );
 
   return (
     <div className="relative w-full pb-8">
       <div className="carousel-container">
-        {limitedProducts && limitedProducts.length > 0 ? (
+        {limitedProducts && limitedProducts.length > 0 && (
           <div className="carousel">
             <div key={currentIndex} className="carousel-item relative">
               <img
@@ -45,8 +52,6 @@ const Banner = () => {
               </div>
             </div>
           </div>
-        ) : (
-          <div className="text-red-400">No products found</div>
         )}
       </div>
 

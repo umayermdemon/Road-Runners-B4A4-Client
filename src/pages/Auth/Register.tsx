@@ -30,7 +30,7 @@ const Register = () => {
     try {
       const formData = new FormData();
       formData.append("data", JSON.stringify(data));
-      formData.append("file", data.userImage);
+      formData.append("file", data?.userImage);
 
       const res = await registerUser(formData).unwrap();
       if (res.error) {
