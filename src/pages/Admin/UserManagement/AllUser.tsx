@@ -3,7 +3,7 @@ import {
   useGetAllUserQuery,
   useUpdateUserStatusMutation,
 } from "@/redux/features/user/userManagementApi";
-import { errorStyle, successStyle } from "@/utils/toastColor";
+import { errorStyle, loadingStyle, successStyle } from "@/utils/toastColor";
 import {
   Button,
   Paper,
@@ -39,7 +39,7 @@ const AllUser = () => {
   const [updateStatus] = useUpdateUserStatusMutation();
   const handleDeactivate = async (id: string, currentStatus: string) => {
     try {
-      const toastId = toast.loading("updating......");
+      const toastId = toast.loading("updating......", { style: loadingStyle });
       const newStatus = currentStatus === "active" ? "deactivate" : "active";
       const res: any = await updateStatus({ id, data: { status: newStatus } });
       if (res?.error) {

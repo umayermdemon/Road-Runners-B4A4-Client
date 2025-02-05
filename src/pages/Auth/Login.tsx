@@ -2,6 +2,7 @@ import { LoginFormFields } from "@/constance/formFields";
 import { setUser } from "@/redux/features/auth/authSlice";
 import { useLoginUserMutation } from "@/redux/features/user/userManagementApi";
 import { useAppDispatch } from "@/redux/hooks";
+import { errorStyle, loadingStyle, successStyle } from "@/utils/toastColor";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import { IconButton, InputAdornment, TextField } from "@mui/material";
@@ -26,6 +27,7 @@ const Login = () => {
     formState: { errors },
   } = useForm();
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const toastId = toast.loading("Logging........", { style: loadingStyle });
     try {
       const userInfo = {
         email: data.email,
@@ -34,17 +36,16 @@ const Login = () => {
       const res = await loginUser(userInfo).unwrap();
       const user = jwtDecode(res?.data?.accessToken);
       dispatch(setUser({ user: user, token: res?.data?.accessToken }));
-      console.log(res, user);
-      toast.success(res?.message);
+      toast.success(res?.message, { style: successStyle, id: toastId });
       reset();
       const redirectPath = location?.state?.fromProduct
         ? `/productDetails/${location?.state?.fromProduct}`
-        : "/"; // Default redirect path (home or dashboard)
+        : "/";
 
       navigate(redirectPath, { replace: true });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      toast.error(err?.data?.message);
+      toast.error(err?.data?.message, { style: errorStyle, id: toastId });
     }
   };
   return (

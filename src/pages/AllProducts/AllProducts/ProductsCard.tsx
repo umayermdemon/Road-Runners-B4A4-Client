@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import AuthUser from "@/utils/authUser";
 
 export default function ProductsCard({ product }: TProduct) {
-  const { inStock, name, price, productImage, brand, _id } = product;
+  const { inStock, name, price, productImage, brand, _id, quantity } = product;
   const user = AuthUser();
   const navigate = useNavigate();
   const handleViewDetails = () => {
@@ -50,7 +50,7 @@ export default function ProductsCard({ product }: TProduct) {
           <div>
             <Typography level="body-xs">Price:</Typography>
             <Typography sx={{ fontSize: "lg", fontWeight: "lg" }}>
-              ${price}
+              ৳{price}
             </Typography>
           </div>
           <div>
@@ -61,7 +61,7 @@ export default function ProductsCard({ product }: TProduct) {
               Status:
             </h1>
             <p className="text-xs font-semibold">
-              {inStock ? "In-Stock" : "Stock-Out"}
+              {inStock ? `In-Stock (${quantity})` : "Stock-Out"}
             </p>
           </div>
         </div>

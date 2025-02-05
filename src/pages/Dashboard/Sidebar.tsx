@@ -11,8 +11,8 @@ import { AddBox, Inventory, People } from "@mui/icons-material";
 import { useAppSelector } from "@/redux/hooks";
 import { selectAuthToken, TUser } from "@/redux/features/auth/authSlice";
 import SidebarItems from "./utils/SidebarItems";
-import PersonIcon from "@mui/icons-material/Person";
 import verifyToken from "@/utils/verifyToken";
+import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 
 const sidebarWidth = 250;
 
@@ -46,9 +46,9 @@ const Sidebar = ({
     { label: "All User", path: "all-user", icon: <People />, role: "Admin" },
 
     {
-      label: "Profile",
-      path: "customer-profile",
-      icon: <PersonIcon />,
+      label: "My Order",
+      path: "customer-order",
+      icon: <ShoppingBagIcon />,
       role: "Customer",
     },
   ];
@@ -77,7 +77,7 @@ const Sidebar = ({
             <List>
               {menuItems
                 .filter(
-                  (item) => item.role === "all" || item.role === user?.role // Filter items based on role
+                  (item) => item.role === "all" || item.role === user?.role
                 )
                 .map((item) => (
                   <SidebarItems

@@ -23,11 +23,12 @@ import ProtectedRoute from "@/components/Layout/ProtectedRoute";
 import CreateProduct from "@/pages/Admin/ProductManagement/CreateProduct";
 import AdminAllProducts from "@/pages/Admin/ProductManagement/AdminAllProducts";
 import AllUser from "@/pages/Admin/UserManagement/AllUser";
-import CustomerProfile from "@/pages/Customer/CustomerProfile/CustomerProfile";
 import verifyToken from "@/utils/verifyToken";
 import Dashboard from "@/pages/Dashboard/Dashboard";
 import Checkout from "@/pages/Order/Checkout";
 import Profile from "@/pages/Profile/Profile";
+import VerifyOrder from "@/pages/Order/VerifyOrder";
+import CustomerOrder from "@/pages/Customer/CustomerOrder/CustomerOrder";
 
 const RoutesWrapper = () => {
   const token = useAppSelector(selectAuthToken);
@@ -50,8 +51,8 @@ const RoutesWrapper = () => {
           { path: "all-user", element: <AllUser /> },
         ]
       : [
-          { index: true, element: <CustomerProfile /> },
-          { path: "customer-profile", element: <CustomerProfile /> },
+          { index: true, element: <CustomerOrder /> },
+          { path: "customer-order", element: <CustomerOrder /> },
         ];
 
   const routes = createBrowserRouter([
@@ -84,6 +85,14 @@ const RoutesWrapper = () => {
           element: (
             <ProtectedRoute role="Customer">
               <Checkout />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/order/verify",
+          element: (
+            <ProtectedRoute role="Customer">
+              <VerifyOrder />
             </ProtectedRoute>
           ),
         },

@@ -1,5 +1,5 @@
+import BannerSkeleton from "@/components/skeleton/BannerSkeleton";
 import { useGetAllProductsQuery } from "@/redux/features/products/productsApi";
-import { CircularProgress } from "@mui/material";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
@@ -21,14 +21,10 @@ const Banner = () => {
         (prevIndex - 1 + limitedProducts.length) % limitedProducts.length
     );
   };
-  if (isLoading)
-    return (
-      <div className=" min-h-[calc(100vh-295px)] flex justify-center items-center">
-        <CircularProgress color="warning" />
-      </div>
-    );
 
-  return (
+  return isLoading ? (
+    <BannerSkeleton />
+  ) : (
     <div className="relative w-full pb-8">
       <div className="carousel-container">
         {limitedProducts && limitedProducts.length > 0 && (

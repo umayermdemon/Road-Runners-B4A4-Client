@@ -28,7 +28,7 @@ const SidebarItems = ({ item, toggleSidebar }: any) => {
                 (location.pathname === "/dashboard" &&
                   item.path === "products") ||
                 (location.pathname === "/dashboard" &&
-                  item.path === "customer-profile")
+                  item.path === "customer-order")
                   ? "#ff6600"
                   : "white",
             }}>
@@ -42,7 +42,7 @@ const SidebarItems = ({ item, toggleSidebar }: any) => {
                 (location.pathname === "/dashboard" &&
                   item.path === "products") ||
                 (location.pathname === "/dashboard" &&
-                  item.path === "customer-profile")
+                  item.path === "customer-order")
                   ? "#ff6600"
                   : "white",
             }}

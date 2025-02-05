@@ -11,13 +11,16 @@ import { useGetSingleProductQuery } from "@/redux/features/products/productsApi"
 import AuthUser from "@/utils/authUser";
 import RegisteredUser from "@/utils/registeredUser";
 import { useState } from "react";
+import { toast } from "sonner";
+import { warningStyle } from "@/utils/toastColor";
+import ProductDetailsSkeleton from "@/components/skeleton/ProductDetailsSkeleton";
 
 export default function ProductDetails() {
   const navigate = useNavigate();
   const user = AuthUser();
 
   const { id } = useParams();
-  const { data: product } = useGetSingleProductQuery(id as string);
+  const { data: product, isLoading } = useGetSingleProductQuery(id as string);
   const registeredUser = RegisteredUser();
   const { name, email } = registeredUser?.data || [];
 
@@ -26,8 +29,12 @@ export default function ProductDetails() {
 
   // Handle Quantity Increase
   const increaseQuantity = () => {
-    if (product?.quantity && quantity < product?.quantity) {
+    if (product?.quantity && quantity < product?.quantity && quantity < 4) {
       setQuantity(quantity + 1);
+    } else {
+      toast.warning("You cannot select more than 4 products.", {
+        style: warningStyle,
+      });
     }
   };
 
@@ -52,7 +59,9 @@ export default function ProductDetails() {
     });
   };
 
-  return (
+  return isLoading ? (
+    <ProductDetailsSkeleton />
+  ) : (
     <div className="flex justify-center items-center  mx-2">
       <Card
         sx={{

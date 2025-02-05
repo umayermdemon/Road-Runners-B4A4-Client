@@ -22,10 +22,20 @@ import { useGetSingleProductQuery } from "@/redux/features/products/productsApi"
 import { useLocation } from "react-router-dom";
 import Button from "@mui/joy/Button";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import {
+  errorStyle,
+  loadingStyle,
+  successStyle,
+  warningStyle,
+} from "@/utils/toastColor";
+import shurjoPay from "../../assets/payment logo/shurjoPay.png";
+import { useCreateOrderMutation } from "@/redux/features/order/orderApi";
 
 export default function CheckoutPage() {
   const location = useLocation();
+  const [paymentMethod, setPaymentMethod] = useState("shurjoPay");
   const [deliveryMethod, setDeliveryMethod] = useState("Inside Dhaka");
   const [country, setCountry] = useState("Bangladesh");
   const userData = location?.state?.user || {};
@@ -36,15 +46,25 @@ export default function CheckoutPage() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const shippingCost = deliveryMethod === "Outside Dhaka" ? 200 : 100;
   const [quantity, setQuantity] = useState(productData?.quantity);
+  const baseShippingCost = deliveryMethod === "Outside Dhaka" ? 2000 : 1000;
+
+  const shippingCost =
+    quantity === 1 ? baseShippingCost : baseShippingCost + 500 * (quantity - 1);
   const totalPrice = quantity * product?.price + shippingCost;
   const subTotalPrice = quantity * product?.price;
 
+  const [createOrder, { isLoading, isSuccess, data, isError, error }] =
+    useCreateOrderMutation();
+  console.log(data?.data);
   // Handle Quantity Increase
   const increaseQuantity = () => {
-    if (product?.quantity && quantity < product?.quantity) {
+    if (product?.quantity && quantity < product?.quantity && quantity < 4) {
       setQuantity(quantity + 1);
+    } else {
+      toast.warning("You cannot select more than 4 products.", {
+        style: warningStyle,
+      });
     }
   };
 
@@ -55,24 +75,54 @@ export default function CheckoutPage() {
     }
   };
 
-  const onSubmit = (data: any) => {
-    if (!data.termsAccepted) {
-      alert("Please accept the terms and conditions.");
-      return;
-    }
+  const onSubmit = async (data: any) => {
     const fullData = {
-      ...data,
-      totalPrice,
+      shippingDetails: {
+        customer_phone: data?.phone,
+        customer_address: data?.address,
+        customer_city: data?.city,
+        customer_country: country,
+      },
       email: userData?.email,
-      product: productData?.id,
+      totalPrice,
+      quantity,
+      productId: productData?.id,
     };
-    console.log("Order Data:", fullData);
-    alert("Order placed successfully!");
+    await createOrder(fullData);
   };
+  const toastId = "order";
+  useEffect(() => {
+    if (isLoading)
+      toast.loading("Processing.....", { style: loadingStyle, id: toastId });
+    if (isSuccess) {
+      toast.success(data?.message, { id: toastId, style: successStyle });
+      if (data?.data) {
+        setTimeout(() => {
+          window.location.href = data?.data;
+        }, 1000);
+      }
+    }
+    if (isError) {
+      toast.error((error as any)?.data?.errorSources[0]?.message, {
+        id: toastId,
+        style: errorStyle,
+      });
+    }
+  }, [
+    isLoading,
+    isSuccess,
+    data?.message,
+    isError,
+    error,
+    data?.errorSources,
+    data?.data,
+  ]);
 
   return (
     <Container maxWidth="xl" sx={{ pt: 4 }}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex gap-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col lg:flex-row gap-4">
         <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
           <Typography
             variant="h5"
@@ -83,10 +133,21 @@ export default function CheckoutPage() {
           </Typography>
           <Divider sx={{ my: 2 }} />
 
-          <Box display="flex" gap={"40px"}>
+          <Box
+            display="flex"
+            flexDirection={{
+              xs: "column",
+              sm: "column",
+              md: "row",
+              lg: "row",
+            }}
+            gap={"40px"}>
             {/* Shipping Address */}
             <Box flex="2/3" maxWidth={"sm"}>
-              <Typography variant="h6" textAlign={"center"}>
+              <Typography
+                variant="h6"
+                textAlign={"center"}
+                marginBottom={"15px"}>
                 <AddLocationAltIcon color="warning" />
                 Shipping Address
               </Typography>
@@ -103,9 +164,14 @@ export default function CheckoutPage() {
                 size="small"
                 fullWidth
                 color="warning"
-                {...register("phone", { required: true })}
+                {...register("phone", {
+                  required: "Phone number is required",
+                  validate: (value) =>
+                    /^\d{11}$/.test(value) ||
+                    "Phone number must be exactly 11 digits",
+                })}
                 error={!!errors.phone}
-                helperText={errors.phone ? "Phone number is required" : ""}
+                helperText={errors.phone?.message?.toString() || ""}
                 type="number"
                 margin="normal"
               />
@@ -142,6 +208,7 @@ export default function CheckoutPage() {
                 margin="normal">
                 <Select
                   value={country || "Bangladesh"}
+                  {...register("country")}
                   onChange={(e) => setCountry(e.target.value)}>
                   <MenuItem value="Bangladesh">Bangladesh</MenuItem>
                 </Select>
@@ -150,8 +217,8 @@ export default function CheckoutPage() {
 
             {/* Shipping Methods */}
             <Box flex="1/3" justifyContent={"end"}>
-              <Box marginBottom={"80px"}>
-                <Typography variant="h6" pt={"10px"}>
+              <Box marginBottom={{ xs: "25px", sm: "25px", md: "80px" }}>
+                <Typography variant="h6" marginBottom={"15px"}>
                   <LocalShippingIcon color="warning" /> Shipping/Delivery
                   Methods
                 </Typography>
@@ -161,12 +228,12 @@ export default function CheckoutPage() {
                   <FormControlLabel
                     value="Inside Dhaka"
                     control={<Radio color="warning" />}
-                    label="Inside Dhaka ($100)"
+                    label="Inside Dhaka (৳1000)"
                   />
                   <FormControlLabel
                     value="Outside Dhaka"
                     control={<Radio color="warning" />}
-                    label="Outside Dhaka ($200)"
+                    label="Outside Dhaka (৳2000)"
                   />
                 </RadioGroup>
               </Box>
@@ -175,25 +242,25 @@ export default function CheckoutPage() {
                 <Typography variant="h6">
                   <PaymentIcon color="warning" /> Payment Method
                 </Typography>
-                {/* <RadioGroup
+                <RadioGroup
                   value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}>
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="space-y-2">
                   <FormControlLabel
-                    value="bkash"
+                    value="shurjoPay"
                     control={<Radio color="warning" />}
-                    label="bKash Payment"
+                    label={
+                      <img
+                        src={shurjoPay}
+                        alt="shurjoPay"
+                        style={{
+                          height: "35px",
+                          marginRight: "8px",
+                        }}
+                      />
+                    }
                   />
-                  <FormControlLabel
-                    value="nagad"
-                    control={<Radio color="warning" />}
-                    label="Nagad Payment"
-                  />
-                  <FormControlLabel
-                    value="card"
-                    control={<Radio color="warning" />}
-                    label="Credit/Debit Card"
-                  />
-                </RadioGroup> */}
+                </RadioGroup>
               </Box>
             </Box>
           </Box>
@@ -235,7 +302,7 @@ export default function CheckoutPage() {
               </div>
             </div>
           </List>
-          <Typography>Shipping: ${shippingCost}</Typography>
+          <Typography>Shipping: ৳{shippingCost}</Typography>
           <Typography variant="h6">Order Total: ${totalPrice}</Typography>
 
           <Divider sx={{ my: 2 }} />
@@ -251,7 +318,7 @@ export default function CheckoutPage() {
           />
 
           <Button variant="solid" color="warning" fullWidth type="submit">
-            Place Order
+            Place Order & Payment
           </Button>
           {errors.termsAccepted && (
             <Typography color="error">You must accept the terms</Typography>

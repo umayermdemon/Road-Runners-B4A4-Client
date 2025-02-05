@@ -54,7 +54,7 @@ const AllProducts = () => {
   return (
     <div className="max-w-7xl mx-auto py-4">
       {/* Search & Filters */}
-      <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6 mx-4">
         {/* Search */}
         <TextField
           label="Search by Name, Brand, or Category"
@@ -132,7 +132,7 @@ const AllProducts = () => {
       </div>
 
       {/* Products Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mx-2">
         {products?.data?.map((item: any) => (
           <ProductsCard key={item._id} product={item} />
         ))}

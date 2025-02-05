@@ -3,6 +3,11 @@ export const errorStyle = {
   color: "white",
   border: "none",
 };
+export const warningStyle = {
+  background: "#FF5722 ",
+  color: "white",
+  border: "none",
+};
 
 export const successStyle = {
   background: "#268b27",
