@@ -8,7 +8,7 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import { useSearchParams } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 // import { CheckCircle, AlertCircle } from "lucide-react";
 
 interface OrderData {
@@ -50,6 +50,7 @@ export default function VerifyOrder() {
 
   const { isLoading, data } = useVerifyOrderQuery(searchParams.get("order_id"));
   const orderData: OrderData = data?.data?.[0];
+  console.log(orderData);
   return isLoading ? (
     <VerifyOrderSkeleton />
   ) : (
@@ -142,9 +143,11 @@ export default function VerifyOrder() {
         </Grid>
 
         <div className=" w-full text-center mt-2">
-          <Button color="warning" variant="contained">
-            View All Order
-          </Button>
+          <NavLink to="/dashboard/customer-order">
+            <Button color="warning" variant="contained">
+              View All Order
+            </Button>
+          </NavLink>
         </div>
       </Grid>
     </div>

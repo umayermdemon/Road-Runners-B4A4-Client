@@ -303,7 +303,7 @@ export default function CheckoutPage() {
             </div>
           </List>
           <Typography>Shipping: ৳{shippingCost}</Typography>
-          <Typography variant="h6">Order Total: ${totalPrice}</Typography>
+          <Typography variant="h6">Order Total: ৳{totalPrice}</Typography>
 
           <Divider sx={{ my: 2 }} />
 

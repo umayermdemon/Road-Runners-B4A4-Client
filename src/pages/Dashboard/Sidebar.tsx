@@ -44,6 +44,12 @@ const Sidebar = ({
       role: "Admin",
     },
     { label: "All User", path: "all-user", icon: <People />, role: "Admin" },
+    {
+      label: "All Order",
+      path: "all-order",
+      icon: <ShoppingBagIcon />,
+      role: "Admin",
+    },
 
     {
       label: "My Order",

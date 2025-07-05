@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useGetAllOrderByEmailQuery } from "@/redux/features/order/orderApi";
-import AuthUser from "@/utils/authUser";
+import { useGetAllOrderQuery } from "@/redux/features/order/orderApi";
+import { Delete } from "@mui/icons-material";
 import {
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -24,7 +25,9 @@ type TTitle = {
     | "productId.productImage"
     | "quantity"
     | "totalPrice"
-    | "status";
+    | "status"
+    | "email"
+    | "delete";
   label: string;
   minWidth?: number;
   align?: "right" | "center" | "left";
@@ -32,6 +35,7 @@ type TTitle = {
 
 const titles: readonly TTitle[] = [
   { id: "productId.name", label: "Bike Name", minWidth: 100, align: "left" },
+  { id: "email", label: "Customer Email", minWidth: 100, align: "left" },
   {
     id: "productId.productImage",
     label: "Bike Image",
@@ -41,11 +45,11 @@ const titles: readonly TTitle[] = [
   { id: "quantity", label: "Quantity", minWidth: 100, align: "left" },
   { id: "totalPrice", label: "Price ($)", minWidth: 100, align: "left" },
   { id: "status", label: "Payment Status", minWidth: 100, align: "left" },
+  { id: "delete", label: "Delete", minWidth: 100, align: "left" },
 ];
 
-const CustomerOrder = () => {
-  const user = AuthUser();
-  const { data } = useGetAllOrderByEmailQuery(user?.email as string, {
+const AllOrder = () => {
+  const { data } = useGetAllOrderQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
   const orderData = data?.data || [];
@@ -150,6 +154,12 @@ const CustomerOrder = () => {
                           }}
                         />
                       );
+                    } else if (column.id === "delete") {
+                      value = (
+                        <IconButton color="error">
+                          <Delete />
+                        </IconButton>
+                      );
                     } else {
                       value = order[column.id];
                     }
@@ -181,4 +191,4 @@ const CustomerOrder = () => {
   );
 };
 
-export default CustomerOrder;
+export default AllOrder;

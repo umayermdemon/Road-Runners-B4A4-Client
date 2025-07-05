@@ -9,6 +9,10 @@ import { Button, Typography, Box } from "@mui/material";
 import RRInput from "@/Form/RRInput";
 import RRSelect from "@/Form/RRSelect";
 import { useCreateProductMutation } from "@/redux/features/products/productsApi";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { errorStyle, loadingStyle, successStyle } from "@/utils/toastColor";
+import { useNavigate } from "react-router-dom";
 
 const brands = [
   "Mountain Bikes Inc.",
@@ -32,29 +36,51 @@ const CreateProduct = () => {
     control,
     formState: { errors },
   } = useForm();
-  const [addProduct] = useCreateProductMutation();
+  const [addProduct, { isLoading, isSuccess, data, isError, error }] =
+    useCreateProductMutation();
+  const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    try {
-      const convertedData = {
-        ...data,
-        price: Number(data.price),
-        quantity: Number(data.quantity),
-      };
-      const productData = {
-        product: convertedData,
-      };
+    const convertedData = {
+      ...data,
+      price: Number(data.price),
+      quantity: Number(data.quantity),
+    };
+    const productData = {
+      product: convertedData,
+    };
 
-      const formData = new FormData();
-      formData.append("data", JSON.stringify(productData));
-      formData.append("file", data?.productImage);
-      console.log(Object.fromEntries(formData.entries()));
-      const res = await addProduct(formData).unwrap();
-      console.log(res);
-    } catch (err) {
-      console.log(err);
-    }
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(productData));
+    formData.append("file", data?.productImage);
+    await addProduct(formData).unwrap();
   };
+  const toastId = "product";
+  useEffect(() => {
+    if (isLoading)
+      toast.loading("Processing.....", { style: loadingStyle, id: toastId });
+    if (isSuccess) {
+      toast.success(data?.message, { id: toastId, style: successStyle });
+      if (data?.data) {
+        navigate("/dashboard/products");
+      }
+    }
+    if (isError) {
+      toast.error((error as any)?.data?.errorSources[0]?.message, {
+        id: toastId,
+        style: errorStyle,
+      });
+    }
+  }, [
+    isLoading,
+    isSuccess,
+    data?.message,
+    isError,
+    error,
+    data?.errorSources,
+    data?.data,
+    navigate,
+  ]);
 
   return (
     <Box
@@ -96,7 +122,7 @@ const CreateProduct = () => {
                 name="price"
                 register={register}
                 registerOptions={{ valueAsNumber: true }}
-                label="Price ($)"
+                label="Price (৳)"
                 type="number"
               />
             </div>

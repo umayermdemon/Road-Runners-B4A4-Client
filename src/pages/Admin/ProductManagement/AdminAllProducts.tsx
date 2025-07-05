@@ -47,7 +47,7 @@ const titles: readonly TTitle[] = [
 
 const AdminAllProducts = () => {
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [stockFilter, setStockFilter] = React.useState("all");
 
   const { data } = useGetAllProductsQuery(undefined);
@@ -112,7 +112,7 @@ const AdminAllProducts = () => {
                     let value = product[column.id];
 
                     if (column.id === "price") {
-                      value = `$${product.price.toFixed(2)}`;
+                      value = `৳${product.price.toFixed(2)}`;
                     }
 
                     if (column.id === "inStock") {
@@ -149,7 +149,7 @@ const AdminAllProducts = () => {
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
+        rowsPerPageOptions={[5, 10, 25, 100]}
         component="div"
         count={filteredProducts.length}
         rowsPerPage={rowsPerPage}

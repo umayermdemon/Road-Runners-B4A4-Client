@@ -19,13 +19,10 @@ const AllProducts = () => {
   const [search, setSearch] = useState("");
   const [brand, setBrand] = useState("");
   const [category, setCategory] = useState("");
-  // const [minPrice, setMinPrice] = useState(100);
-  // const [maxPrice, setMaxPrice] = useState(5000);
   const [inStock, setInStock] = useState(false);
   const [page, setPage] = useState(1);
   const limit = 8;
 
-  // Fetch products with applied filters
   const { data: products, isLoading } = useGetAllProductsWithSearchQuery({
     search,
     brand,
@@ -34,7 +31,6 @@ const AllProducts = () => {
     page,
     limit,
   });
-  console.log(products);
   const brands =
     products?.data?.reduce((acc: string[], product: { brand: string }) => {
       if (!acc.includes(product.brand)) {

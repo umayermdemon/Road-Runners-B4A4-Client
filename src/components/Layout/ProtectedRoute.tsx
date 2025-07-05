@@ -19,7 +19,6 @@ const ProtectedRoute = ({ children, role }: TRoute) => {
   const currentUser = useAppSelector(selectAuthUser);
   const dispatch = useAppDispatch();
   const location = useLocation();
-  console.log(location);
   let user;
   if (token) {
     user = verifyToken(token);

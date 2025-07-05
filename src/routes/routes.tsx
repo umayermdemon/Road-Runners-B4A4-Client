@@ -29,6 +29,7 @@ import Checkout from "@/pages/Order/Checkout";
 import Profile from "@/pages/Profile/Profile";
 import VerifyOrder from "@/pages/Order/VerifyOrder";
 import CustomerOrder from "@/pages/Customer/CustomerOrder/CustomerOrder";
+import AllOrder from "@/pages/Admin/OrderManagement/AllOrder";
 
 const RoutesWrapper = () => {
   const token = useAppSelector(selectAuthToken);
@@ -49,6 +50,7 @@ const RoutesWrapper = () => {
           { path: "products", element: <AdminAllProducts /> },
           { path: "create-product", element: <CreateProduct /> },
           { path: "all-user", element: <AllUser /> },
+          { path: "all-order", element: <AllOrder /> },
         ]
       : [
           { index: true, element: <CustomerOrder /> },
